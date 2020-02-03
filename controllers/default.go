@@ -3,10 +3,12 @@ package controllers
 import (
 	"bytes"
 	"fmt"
-	"io/ioutil"
+	"log"
 	"net/http"
+	"net/url"
 	"strings"
 
+	"github.com/PuerkitoBio/goquery"
 	"github.com/astaxie/beego"
 )
 
@@ -37,7 +39,6 @@ func httpPostJson() {
 	url := "https://www1.inservice.edu.tw/script/IndexQuery.aspx?city=2"
 
 	payload := strings.NewReader(encodePostData(postData))
-
 	req, _ := http.NewRequest("POST", url, payload)
 
 	req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
@@ -52,19 +53,31 @@ func httpPostJson() {
 	req.Header.Add("Connection", "keep-alive")
 	req.Header.Add("cache-control", "no-cache")
 
-	res, _ := http.DefaultClient.Do(req)
+	res, err := http.DefaultClient.Do(req)
+	if err != nil {
+		// process error
+	}
 
 	defer res.Body.Close()
-	body, _ := ioutil.ReadAll(res.Body)
+	// body, _ := ioutil.ReadAll(res.Body)
 
-	fmt.Println(res)
-	fmt.Println(string(body))
+	dom, err := goquery.NewDocumentFromReader(res.Body)
+	if err != nil {
+		log.Fatalln(err)
+	}
+
+	dom.Find(".cinfo-r2").Each(func(i int, selection *goquery.Selection) {
+		fmt.Println(selection.Text())
+	})
+
+	// fmt.Println(res)
+	// fmt.Println(string(body))
 }
 
 func encodePostData(m map[string]string) string {
 	b := new(bytes.Buffer)
 	for key, value := range m {
-		fmt.Fprintf(b, "%s=\"%s\"&", key, value)
+		fmt.Fprintf(b, "%s=%s&", key, url.QueryEscape(value))
 	}
 	return b.String()
 }
