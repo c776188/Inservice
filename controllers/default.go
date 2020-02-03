@@ -12,6 +12,11 @@ import (
 	"github.com/astaxie/beego"
 )
 
+type iClass struct {
+	ID   string
+	Name string
+}
+
 type MainController struct {
 	beego.Controller
 }
@@ -64,14 +69,23 @@ func httpPostJson() {
 	// body, _ := ioutil.ReadAll(res.Body)
 	// fmt.Println(string(body))
 
+	classes := []iClass{}
+
 	dom, err := goquery.NewDocumentFromReader(res.Body)
 	if err != nil {
 		log.Fatalln(err)
 	}
 
-	dom.Find(".cinfo-r2").Each(func(i int, selection *goquery.Selection) {
-		fmt.Println(selection.Text())
+	dom.Find(".cinfo-r1>tbody>tr>td:first-child").Each(func(i int, selection *goquery.Selection) {
+		temp := iClass{ID: selection.Text(), Name: ""}
+		classes = append(classes, temp)
 	})
+
+	dom.Find(".cinfo-r2").Each(func(i int, selection *goquery.Selection) {
+		classes[i].Name = selection.Text()
+	})
+
+	fmt.Println(classes)
 
 	dom.Find(".cssctsTitle2>td>a").Each(func(i int, selection *goquery.Selection) {
 		href, ok := selection.Attr("href")
