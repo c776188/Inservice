@@ -22,6 +22,9 @@
                     <th>ID</th>
                     <th>Name</th>
                     <th>Location</th>
+                    <th>SignUpTime</th>
+                    <th>AttendClassTime</th>
+                    <th>StudyHours</th>
                 </tr>
             </thead>
             <tbody id="rows">
@@ -35,7 +38,11 @@
     <tr>
         <td>{{item.ID}}</td>
         <td>{{item.Name}}</td>
-        <td>{{item.Location}}</td>
+        <!-- <td>{{item.Location}}</td> -->
+        <td>{{item.Detail.Location}}</td>
+        <td>{{item.Detail.SignUpStatus}} <br/> {{item.Detail.SignUpTime}}</td>
+        <td>{{item.Detail.AttendClassTime}}</td>
+        <td>{{item.Detail.StudyHours}}</td>
     </tr>
 </script>
 
