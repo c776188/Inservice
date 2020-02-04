@@ -17,6 +17,7 @@ import (
 type iClass struct {
 	ID   string
 	Name string
+	Location string
 }
 
 type MainController struct {
@@ -99,6 +100,10 @@ func postInservicePage(page int) []iClass {
 
 	dom.Find(".cinfo-r2").Each(func(i int, selection *goquery.Selection) {
 		classes[i].Name = selection.Text()
+	})
+
+	dom.Find(".cinfo-r3").Each(func(i int, selection *goquery.Selection) {
+		classes[i].Location = selection.Text()
 	})
 
 	nextPage := false

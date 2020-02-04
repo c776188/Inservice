@@ -21,6 +21,7 @@
                 <tr>
                     <th>ID</th>
                     <th>Name</th>
+                    <th>Location</th>
                 </tr>
             </thead>
             <tbody id="rows">
@@ -33,9 +34,8 @@
 <script type="text/x-template" id="crawler-template">
     <tr>
         <td>{{item.ID}}</td>
-        <td>
-            <a :href="'http://big5.quanben.io' + item.Url" target="_blank"> </a>
-        </td>
+        <td>{{item.Name}}</td>
+        <td>{{item.Location}}</td>
     </tr>
 </script>
 
