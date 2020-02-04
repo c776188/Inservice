@@ -23,11 +23,25 @@ type MainController struct {
 	beego.Controller
 }
 
+func (c *MainController) URLMapping() {
+	c.Mapping("Post", c.Post)
+}
+
 func (c *MainController) Get() {
-	fmt.Println(postInservicePage(0))
 	c.Data["Website"] = "beego.me"
 	c.Data["Email"] = "astaxie@gmail.com"
 	c.TplName = "index.tpl"
+}
+
+func (c *MainController) Post() {
+	fmt.Println("aaaaaa")
+	// pages, _ := c.GetInt("page")
+	var result []iClass
+
+	result = postInservicePage(0)
+
+	c.Data["json"] = &result
+	c.ServeJSON()
 }
 
 func postInservicePage(page int) []iClass {
