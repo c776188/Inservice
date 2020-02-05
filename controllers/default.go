@@ -2,7 +2,9 @@ package controllers
 
 import (
 	"bytes"
+	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"log"
 	"net/http"
 	"net/url"
@@ -12,6 +14,8 @@ import (
 
 	"github.com/PuerkitoBio/goquery"
 	"github.com/astaxie/beego"
+	"github.com/astaxie/beego/config"
+	_ "github.com/astaxie/beego/config"
 )
 
 type iClass struct {
@@ -27,6 +31,41 @@ type iDetail struct {
 	AttendClassTime string
 	StudyHours      string
 	Location        string
+	MapDetail       gMap
+}
+
+type gMap struct {
+	Destination_addresses []string `json:"destination_addresses"`
+	Origin_addresses      []string `json:"origin_addresses"`
+	Rows                  []Row    `json:"rows"`
+	Status                string   `json:"status"`
+}
+
+type Row struct {
+	Elements []Elements `json:"elements"`
+}
+
+type Elements struct {
+	Distance Distance `json:"distance"`
+	Duration Duration `json:"duration"`
+	Fare     Fare     `json:"fare"`
+	Status   string   `json:"status"`
+}
+
+type Distance struct {
+	Text  string `json:"text"`
+	Value int    `json:"value"`
+}
+
+type Duration struct {
+	Text  string `json:"text"`
+	Value int    `json:"value"`
+}
+
+type Fare struct {
+	Currency string `json:"currency"`
+	Text     string `json:"text"`
+	Value    int    `json:"value"`
 }
 
 type MainController struct {
@@ -194,7 +233,44 @@ func postInserviceDetail(id string) iDetail {
 	// 開課地點
 	dom.Find("#ctl00_CPH_Content_pl_courseData > div:nth-child(4) > table > tbody > tr > td:nth-child(2) > table > tbody > tr:nth-child(2) > td.cw_table_info.c2.cs3").Each(func(i int, selection *goquery.Selection) {
 		detail.Location = selection.Text()
+		detail.MapDetail = getMapDuration(selection.Text())
 	})
 
 	return detail
+}
+
+func getMapDuration(destinations string) gMap {
+	mapConfig, err := config.NewConfig("ini", "conf/env.conf")
+	mapKey := mapConfig.String("gMapKey")
+
+	sendData := make(map[string]string)
+	sendData["units"] = "imperial"
+	sendData["origins"] = "242新北市新莊區中正路893巷120號"
+	sendData["destinations"] = destinations
+	sendData["mode"] = "transit"
+	sendData["key"] = mapKey
+
+	url := "https://maps.googleapis.com/maps/api/distancematrix/json?" + encodePostData(sendData)
+
+	req, _ := http.NewRequest("GET", url, nil)
+
+	req.Header.Add("cache-control", "no-cache")
+	req.Header.Add("Postman-Token", "289e8303-b2e6-443e-8f9d-fba92eea10b2")
+
+	res, err := http.DefaultClient.Do(req)
+	if err != nil {
+		log.Fatalln(err)
+	}
+
+	defer res.Body.Close()
+	body, _ := ioutil.ReadAll(res.Body)
+
+	g := gMap{}
+
+	err2 := json.Unmarshal(body, &g)
+	if err2 != nil {
+		log.Fatalln(err2)
+	}
+
+	return g
 }

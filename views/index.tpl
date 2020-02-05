@@ -22,6 +22,7 @@
                     <th>ID</th>
                     <th>Name</th>
                     <th>Location</th>
+                    <th>Duration</th>
                     <th>SignUpTime</th>
                     <th>AttendClassTime</th>
                     <th>StudyHours</th>
@@ -40,6 +41,13 @@
         <td>{{item.Name}}</td>
         <!-- <td>{{item.Location}}</td> -->
         <td>{{item.Detail.Location}}</td>
+        <td>
+            <span v-for="r in item.Detail.MapDetail.rows">
+                <span v-for="e in r.elements">
+                    {{e.duration.text}}
+                </span>
+            </span>
+        </td>
         <td>{{item.Detail.SignUpStatus}} <br/> {{item.Detail.SignUpTime}}</td>
         <td>{{item.Detail.AttendClassTime}}</td>
         <td>{{item.Detail.StudyHours}}</td>
