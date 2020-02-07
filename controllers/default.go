@@ -18,6 +18,7 @@ import (
 	_ "github.com/astaxie/beego/config"
 )
 
+// class 資訊
 type iClass struct {
 	ID       string
 	Name     string
@@ -25,6 +26,7 @@ type iClass struct {
 	Detail   iDetail
 }
 
+// detail 資訊
 type iDetail struct {
 	SignUpStatus    string
 	SignUpTime      string
@@ -34,6 +36,7 @@ type iDetail struct {
 	MapDetail       gMap
 }
 
+// gmap 資訊
 type gMap struct {
 	Destination_addresses []string `json:"destination_addresses"`
 	Origin_addresses      []string `json:"origin_addresses"`
@@ -67,6 +70,7 @@ type Fare struct {
 	Text     string `json:"text"`
 	Value    int    `json:"value"`
 }
+// gmap 資訊 end
 
 type MainController struct {
 	beego.Controller
@@ -76,17 +80,16 @@ func (c *MainController) URLMapping() {
 	c.Mapping("Post", c.Post)
 }
 
+// index 頁面
 func (c *MainController) Get() {
-	c.Data["Website"] = "beego.me"
-	c.Data["Email"] = "astaxie@gmail.com"
 	c.TplName = "index.tpl"
 }
 
+// post 拿取爬蟲資料
 func (c *MainController) Post() {
-	fmt.Println("aaaaaa")
-	// pages, _ := c.GetInt("page")
 	var result []iClass
 
+	// post
 	result = postInservicePage(0)
 
 	c.Data["json"] = &result
