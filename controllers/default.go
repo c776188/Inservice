@@ -106,7 +106,7 @@ func (c *MainController) Post() {
 }
 
 func getInitInservice() defaultKey {
-	url := "https://www1.inservice.edu.tw/script/IndexQuery.aspx?city=2"
+	url := "https://www1.inservice.edu.tw/script/IndexQuery.aspx?city=9"
 
 	req, _ := http.NewRequest("GET", url, nil)
 
@@ -155,14 +155,14 @@ func postInservicePage(page int, key defaultKey) []iClass {
 	postData["__VIEWSTATEENCRYPTED"] = ""
 	postData["__EVENTARGUMENT"] = ""
 	postData["ddlQueryType"] = "byCity"
-	postData["ddlCityList"] = "2"
+	postData["ddlCityList"] = "9"
 	postData["ddlSchoolLevelByCity"] = "50"
-	postData["ddlCourseTag"] = "安全教育"
+	postData["ddlCourseTag"] = "基本訓練"
 	postData["Button1"] = "查詢"
 	postData["__EVENTTARGET"] = ""
 	payload := strings.NewReader(encodeSendData(postData))
 
-	url := "https://www1.inservice.edu.tw/script/IndexQuery.aspx?city=2"
+	url := "https://www1.inservice.edu.tw/script/IndexQuery.aspx?city=9"
 	req, _ := http.NewRequest("POST", url, payload)
 
 	req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
