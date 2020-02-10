@@ -6,3 +6,7 @@
 
 /conf/env.conf  
 gMapKey = "google map key"
+
+### api資料
+
+[Distance Matrix API](https://developers.google.com/maps/documentation/distance-matrix/intro#travel_modes)
