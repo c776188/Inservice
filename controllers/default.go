@@ -298,7 +298,7 @@ func getMapDuration(destinations string) gMap {
 
 	sendData := make(map[string]string)
 	sendData["units"] = "imperial"
-	sendData["origins"] = "242新北市新莊區中正路893巷120號"
+	sendData["origins"] = mapConfig.String("origins")
 	sendData["destinations"] = destinations
 	sendData["mode"] = "transit"
 	sendData["key"] = mapKey
