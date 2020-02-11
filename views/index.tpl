@@ -16,6 +16,7 @@
 
 <body>
     <div id="app">
+        <div v-if="isloading" id="loading"> Loading~~~~</div>
         <table v-cloak v-if="isCrawlerTable" cellspacing="0" cellpadding="4" border="1">
             <thead>
                 <tr>

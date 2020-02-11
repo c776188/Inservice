@@ -7,8 +7,8 @@ window.onload = function() {
     var app = new Vue({
         el: '#app',
         data: {
-            pages: 1,
             isCrawlerTable: false,
+            isloading: true,
             classes: [
                 {}
             ]
@@ -19,6 +19,7 @@ window.onload = function() {
         methods: {
             callCrawler() {
                 this.isCrawlerTable = false;
+                this.isloading = true;
                 var self = this;
                 $.ajax({
                     type: 'POST',
@@ -27,6 +28,7 @@ window.onload = function() {
                     success: function(data) {
                         self.classes = data;
                         self.isCrawlerTable = true;
+                        self.isloading = false;
                     }
                 });
             }
