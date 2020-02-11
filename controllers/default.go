@@ -352,7 +352,7 @@ func getMapDuration(destinations string) gMap {
 	sendData["units"] = "imperial"
 	sendData["origins"] = mapConfig.String("origins")
 	sendData["destinations"] = destinations
-	sendData["mode"] = "transit"
+	sendData["mode"] = "driving"
 	sendData["key"] = mapKey
 	url := "https://maps.googleapis.com/maps/api/distancematrix/json?" + encodeSendData(sendData)
 
