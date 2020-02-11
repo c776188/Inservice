@@ -123,7 +123,7 @@ func getInitInservice() defaultKey {
 		log.Fatalln(err)
 	}
 	defer res.Body.Close()
-	// fmt.Println(res.Header["Set-Cookie"])
+
 	// goquery 爬蟲取得資訊
 	dom, err := goquery.NewDocumentFromReader(res.Body)
 	if err != nil {
@@ -131,17 +131,62 @@ func getInitInservice() defaultKey {
 	}
 
 	var result defaultKey
-	dom.Find("input#__VIEWSTATE").Each(func(i int, selection *goquery.Selection) {
-		result.VIEWSTATE, _ = selection.Attr("value")
-	})
 
-	dom.Find("input#__EVENTVALIDATION").Each(func(i int, selection *goquery.Selection) {
-		result.EVENTVALIDATION, _ = selection.Attr("value")
-	})
+	// 更新key
+	result = updateKey(dom, result)
 
-	result.Class = postInservicePage(0, result)
+	// 取得資訊
+	result.Class = postSearchInservice(result)
 
 	return result
+}
+
+// 搜尋資料
+func postSearchInservice(key defaultKey) []iClass {
+	postData := make(map[string]string)
+	postData["__EVENTVALIDATION"] = key.EVENTVALIDATION
+	postData["__VIEWSTATE"] = key.VIEWSTATE
+	postData["__VIEWSTATEGENERATOR"] = "82F443D6"
+	postData["__VIEWSTATEENCRYPTED"] = ""
+	postData["__EVENTARGUMENT"] = ""
+	postData["ddlQueryType"] = "byCity"
+	postData["ddlCityList"] = "9"
+	postData["ddlSchoolLevelByCity"] = "50"
+	postData["ddlCourseTag"] = ""
+	postData["button1"] = "查詢"
+	payload := strings.NewReader(encodeSendData(postData))
+
+	url := "https://www1.inservice.edu.tw/script/IndexQuery.aspx?city=9"
+	req, _ := http.NewRequest("POST", url, payload)
+
+	req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
+	req.Header.Add("Cookie", "ASP.NET_SessionId=lhzlilg1z2e0ibwneqi1keex")
+	req.Header.Add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.108 Safari/537.36")
+	req.Header.Add("Accept", "*/*")
+	req.Header.Add("Cache-Control", "no-cache")
+	req.Header.Add("Host", "www1.inservice.edu.tw")
+	req.Header.Add("Accept-Encoding", "gzip, deflate")
+	req.Header.Add("Content-Length", "19788")
+	req.Header.Add("Connection", "keep-alive")
+	req.Header.Add("cache-control", "no-cache")
+
+	res, err := http.DefaultClient.Do(req)
+	if err != nil {
+		log.Fatalln(err)
+	}
+
+	defer res.Body.Close()
+
+	// goquery 爬蟲取得資訊
+	dom, err := goquery.NewDocumentFromReader(res.Body)
+	if err != nil {
+		log.Fatalln(err)
+	}
+
+	// 更新key
+	key = updateKey(dom, key)
+
+	return postInservicePage(0, key)
 }
 
 // 爬蟲 取得課程資訊
@@ -188,13 +233,7 @@ func postInservicePage(page int, key defaultKey) []iClass {
 	}
 
 	// 更新key
-	dom.Find("input#__VIEWSTATE").Each(func(i int, selection *goquery.Selection) {
-		key.VIEWSTATE, _ = selection.Attr("value")
-	})
-
-	dom.Find("input#__EVENTVALIDATION").Each(func(i int, selection *goquery.Selection) {
-		key.EVENTVALIDATION, _ = selection.Attr("value")
-	})
+	key = updateKey(dom, key)
 
 	// 取得資訊
 	dom.Find(".cinfo-r1>tbody>tr>td:first-child").Each(func(i int, selection *goquery.Selection) {
@@ -228,6 +267,19 @@ func postInservicePage(page int, key defaultKey) []iClass {
 
 	return classes
 	// fmt.Println(res)
+}
+
+// 更新取得key
+func updateKey(dom *goquery.Document, key defaultKey) defaultKey {
+	dom.Find("input#__VIEWSTATE").Each(func(i int, selection *goquery.Selection) {
+		key.VIEWSTATE, _ = selection.Attr("value")
+	})
+
+	dom.Find("input#__EVENTVALIDATION").Each(func(i int, selection *goquery.Selection) {
+		key.EVENTVALIDATION, _ = selection.Attr("value")
+	})
+
+	return key
 }
 
 // encode map to string
@@ -290,7 +342,7 @@ func postInserviceDetail(id string) iDetail {
 	// 開課地點
 	dom.Find("#ctl00_CPH_Content_pl_courseData > div:nth-child(4) > table > tbody > tr > td:nth-child(2) > table > tbody > tr:nth-child(2) > td.cw_table_info.c2.cs3").Each(func(i int, selection *goquery.Selection) {
 		detail.Location = selection.Text()
-		detail.MapDetail = getMapDuration(selection.Text())
+		// detail.MapDetail = getMapDuration(selection.Text())
 	})
 
 	return detail
