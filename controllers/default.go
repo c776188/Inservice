@@ -77,8 +77,6 @@ type Fare struct {
 	Value    int    `json:"value"`
 }
 
-// gmap 資訊 end
-
 // google map 串接資訊 end
 
 type MainController struct {
@@ -105,18 +103,18 @@ func (c *MainController) Post() {
 	c.ServeJSON()
 }
 
+// 取得key
 func getInitInservice() defaultKey {
 	url := "https://www1.inservice.edu.tw/script/IndexQuery.aspx?city=9"
 
 	req, _ := http.NewRequest("GET", url, nil)
 
-	req.Header.Add("User-Agent", "PostmanRuntime/7.20.1")
+	req.Header.Add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.108 Safari/537.36")
 	req.Header.Add("Accept", "*/*")
 	req.Header.Add("Cache-Control", "no-cache")
-	req.Header.Add("Postman-Token", "6baa6148-e052-492b-ac0b-b6df8d71998e,f324f7ad-1a4f-4e8c-8c01-b683f1293a87")
 	req.Header.Add("Host", "www1.inservice.edu.tw")
 	req.Header.Add("Accept-Encoding", "gzip, deflate")
-	req.Header.Add("Cookie", "ASP.NET_SessionId=eeoq03njmzbwzz32lbifocvo")
+	req.Header.Add("Cookie", "ASP.NET_SessionId=lhzlilg1z2e0ibwneqi1keex")
 	req.Header.Add("Connection", "keep-alive")
 	req.Header.Add("cache-control", "no-cache")
 
@@ -125,7 +123,7 @@ func getInitInservice() defaultKey {
 		log.Fatalln(err)
 	}
 	defer res.Body.Close()
-
+	// fmt.Println(res.Header["Set-Cookie"])
 	// goquery 爬蟲取得資訊
 	dom, err := goquery.NewDocumentFromReader(res.Body)
 	if err != nil {
@@ -157,16 +155,15 @@ func postInservicePage(page int, key defaultKey) []iClass {
 	postData["ddlQueryType"] = "byCity"
 	postData["ddlCityList"] = "9"
 	postData["ddlSchoolLevelByCity"] = "50"
-	postData["ddlCourseTag"] = "基本訓練"
-	postData["Button1"] = "查詢"
-	postData["__EVENTTARGET"] = ""
+	postData["ddlCourseTag"] = ""
+	postData["__EVENTTARGET"] = "dgSelectResult$_ctl24$_ctl" + strconv.Itoa(page)
 	payload := strings.NewReader(encodeSendData(postData))
 
 	url := "https://www1.inservice.edu.tw/script/IndexQuery.aspx?city=9"
 	req, _ := http.NewRequest("POST", url, payload)
 
 	req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
-	req.Header.Add("Cookie", "eeoq03njmzbwzz32lbifocvo,eeoq03njmzbwzz32lbifocvo; ASP.NET_SessionId=eeoq03njmzbwzz32lbifocvo")
+	req.Header.Add("Cookie", "ASP.NET_SessionId=lhzlilg1z2e0ibwneqi1keex")
 	req.Header.Add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.108 Safari/537.36")
 	req.Header.Add("Accept", "*/*")
 	req.Header.Add("Cache-Control", "no-cache")
@@ -182,7 +179,6 @@ func postInservicePage(page int, key defaultKey) []iClass {
 	}
 
 	defer res.Body.Close()
-	// fmt.Println(string(body))
 
 	// goquery 爬蟲取得資訊
 	classes := []iClass{}
@@ -191,6 +187,16 @@ func postInservicePage(page int, key defaultKey) []iClass {
 		log.Fatalln(err)
 	}
 
+	// 更新key
+	dom.Find("input#__VIEWSTATE").Each(func(i int, selection *goquery.Selection) {
+		key.VIEWSTATE, _ = selection.Attr("value")
+	})
+
+	dom.Find("input#__EVENTVALIDATION").Each(func(i int, selection *goquery.Selection) {
+		key.EVENTVALIDATION, _ = selection.Attr("value")
+	})
+
+	// 取得資訊
 	dom.Find(".cinfo-r1>tbody>tr>td:first-child").Each(func(i int, selection *goquery.Selection) {
 		temp := iClass{ID: selection.Text(), Detail: postInserviceDetail(selection.Text())}
 		classes = append(classes, temp)
@@ -227,8 +233,8 @@ func postInservicePage(page int, key defaultKey) []iClass {
 // encode map to string
 func encodeSendData(m map[string]string) string {
 	b := new(bytes.Buffer)
-	for key, value := range m {
-		fmt.Fprintf(b, "%s=%s&", key, url.QueryEscape(value))
+	for k, v := range m {
+		fmt.Fprintf(b, "%s=%s&", k, url.QueryEscape(v))
 	}
 	return b.String()
 }
