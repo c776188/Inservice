@@ -77,7 +77,7 @@ type Fare struct {
 	Value    int    `json:"value"`
 }
 
-// google map 串接資訊 end
+var searchUrl = "https://www1.inservice.edu.tw/script/IndexQuery.aspx?city="
 
 type MainController struct {
 	beego.Controller
@@ -94,6 +94,8 @@ func (c *MainController) Get() {
 
 // post 取得課程資訊
 func (c *MainController) Post() {
+	searchUrl = searchUrl + "9"
+
 	var result []iClass
 
 	// post
@@ -105,9 +107,7 @@ func (c *MainController) Post() {
 
 // 取得key
 func getInitInservice() defaultKey {
-	url := "https://www1.inservice.edu.tw/script/IndexQuery.aspx?city=9"
-
-	req, _ := http.NewRequest("GET", url, nil)
+	req, _ := http.NewRequest("GET", searchUrl, nil)
 
 	req.Header.Add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.108 Safari/537.36")
 	req.Header.Add("Accept", "*/*")
@@ -135,29 +135,31 @@ func getInitInservice() defaultKey {
 	// 更新key
 	result = updateKey(dom, result)
 
+	// 搜尋資訊加密
+	searchKey := make(map[string]string)
+	searchKey["__VIEWSTATEGENERATOR"] = "82F443D6"
+	searchKey["__VIEWSTATEENCRYPTED"] = ""
+	searchKey["__EVENTARGUMENT"] = ""
+	searchKey["ddlQueryType"] = "byCity"
+	searchKey["ddlCityList"] = "9"
+	searchKey["ddlSchoolLevelByCity"] = "50"
+	searchKey["ddlCourseTag"] = ""
+
 	// 取得資訊
-	result.Class = postSearchInservice(result)
+	result.Class = postSearchInservice(result, encodeSendData(searchKey))
 
 	return result
 }
 
 // 搜尋資料
-func postSearchInservice(key defaultKey) []iClass {
+func postSearchInservice(key defaultKey, searchKey string) []iClass {
 	postData := make(map[string]string)
 	postData["__EVENTVALIDATION"] = key.EVENTVALIDATION
 	postData["__VIEWSTATE"] = key.VIEWSTATE
-	postData["__VIEWSTATEGENERATOR"] = "82F443D6"
-	postData["__VIEWSTATEENCRYPTED"] = ""
-	postData["__EVENTARGUMENT"] = ""
-	postData["ddlQueryType"] = "byCity"
-	postData["ddlCityList"] = "9"
-	postData["ddlSchoolLevelByCity"] = "50"
-	postData["ddlCourseTag"] = ""
 	postData["button1"] = "查詢"
-	payload := strings.NewReader(encodeSendData(postData))
+	payload := strings.NewReader(searchKey + encodeSendData(postData))
 
-	url := "https://www1.inservice.edu.tw/script/IndexQuery.aspx?city=9"
-	req, _ := http.NewRequest("POST", url, payload)
+	req, _ := http.NewRequest("POST", searchUrl, payload)
 
 	req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
 	req.Header.Add("Cookie", "ASP.NET_SessionId=lhzlilg1z2e0ibwneqi1keex")
@@ -186,26 +188,18 @@ func postSearchInservice(key defaultKey) []iClass {
 	// 更新key
 	key = updateKey(dom, key)
 
-	return postInservicePage(0, key)
+	return postInservicePage(0, key, searchKey)
 }
 
 // 爬蟲 取得課程資訊
-func postInservicePage(page int, key defaultKey) []iClass {
+func postInservicePage(page int, key defaultKey, searchKey string) []iClass {
 	postData := make(map[string]string)
 	postData["__EVENTVALIDATION"] = key.EVENTVALIDATION
 	postData["__VIEWSTATE"] = key.VIEWSTATE
-	postData["__VIEWSTATEGENERATOR"] = "82F443D6"
-	postData["__VIEWSTATEENCRYPTED"] = ""
-	postData["__EVENTARGUMENT"] = ""
-	postData["ddlQueryType"] = "byCity"
-	postData["ddlCityList"] = "9"
-	postData["ddlSchoolLevelByCity"] = "50"
-	postData["ddlCourseTag"] = ""
 	postData["__EVENTTARGET"] = "dgSelectResult$_ctl24$_ctl" + strconv.Itoa(page)
-	payload := strings.NewReader(encodeSendData(postData))
+	payload := strings.NewReader(searchKey + encodeSendData(postData))
 
-	url := "https://www1.inservice.edu.tw/script/IndexQuery.aspx?city=9"
-	req, _ := http.NewRequest("POST", url, payload)
+	req, _ := http.NewRequest("POST", searchUrl, payload)
 
 	req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
 	req.Header.Add("Cookie", "ASP.NET_SessionId=lhzlilg1z2e0ibwneqi1keex")
@@ -262,7 +256,7 @@ func postInservicePage(page int, key defaultKey) []iClass {
 	})
 
 	if nextPage {
-		return append(classes, postInservicePage(page+1, key)...)
+		return append(classes, postInservicePage(page+1, key, searchKey)...)
 	}
 
 	return classes
