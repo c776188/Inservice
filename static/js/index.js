@@ -1,14 +1,23 @@
 window.onload = function() {
-    Vue.component('crawler-template', {
-        props: ['item'],
-        template: '#crawler-template'
-    })
-
-    var app = new Vue({
+    new Vue({
         el: '#app',
+        vuetify: new Vuetify(),
         data: {
-            isCrawlerTable: false,
             isloading: true,
+            search: '',
+            headers: [{
+                    text: 'ID',
+                    align: 'left',
+                    sortable: false,
+                    value: 'ID',
+                },
+                { text: 'Name', value: 'Name' },
+                { text: 'Location', value: 'Detail.Location' },
+                { text: 'Duration', value: 'Detail.MapDetail.rows[0].elements[0].duration.text' },
+                { text: 'SignUpTime', value: 'Detail.SignUpStatus' },
+                { text: 'AttendClassTime', value: 'Detail.AttendClassTime' },
+                { text: 'StudyHours', value: 'Detail.StudyHours' },
+            ],
             classes: [
                 {}
             ]
@@ -18,7 +27,6 @@ window.onload = function() {
         },
         methods: {
             callCrawler() {
-                this.isCrawlerTable = false;
                 this.isloading = true;
                 var self = this;
                 $.ajax({
@@ -27,7 +35,6 @@ window.onload = function() {
                     data: {},
                     success: function(data) {
                         self.classes = data;
-                        self.isCrawlerTable = true;
                         self.isloading = false;
                     }
                 });
