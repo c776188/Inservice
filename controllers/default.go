@@ -39,7 +39,7 @@ type iDetail struct {
 	AttendClassTime string
 	StudyHours      string
 	Location        string
-	MapDetail       gMap
+	MapElement      Elements
 }
 
 // google map 串接資訊
@@ -101,8 +101,38 @@ func (c *MainController) Post() {
 	// post
 	result = getInitInservice().Class
 
+	// 計算距離
+	locations := []string{}
+	var locationString string
+	maxMapCount := 25
+	nloop := 0
+	for i, r := range result {
+		// push array
+		locations = append(locations, r.Detail.Location)
+
+		if i%maxMapCount == maxMapCount-1 || i == len(result)-1 {
+			// handle string and call map api
+			locationString = TrimSpaceNewlineInString(strings.Join(locations[:], "|"))
+			tmpMap := getMapDuration(locationString)
+
+			// assign element
+			for j, element := range tmpMap.Rows[0].Elements {
+				result[j+nloop*maxMapCount].Detail.MapElement = element
+			}
+
+			// reset data
+			locations = nil
+			nloop++
+		}
+	}
+
 	c.Data["json"] = &result
 	c.ServeJSON()
+}
+
+func TrimSpaceNewlineInString(s string) string {
+	space := regexp.MustCompile(`\s+`)
+	return space.ReplaceAllString(s, "")
 }
 
 // 取得key
@@ -336,7 +366,6 @@ func postInserviceDetail(id string) iDetail {
 	// 開課地點
 	dom.Find("#ctl00_CPH_Content_pl_courseData > div:nth-child(4) > table > tbody > tr > td:nth-child(2) > table > tbody > tr:nth-child(2) > td.cw_table_info.c2.cs3").Each(func(i int, selection *goquery.Selection) {
 		detail.Location = selection.Text()
-		// detail.MapDetail = getMapDuration(selection.Text())
 	})
 
 	return detail

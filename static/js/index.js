@@ -13,7 +13,7 @@ window.onload = function() {
                 },
                 { text: 'Name', value: 'Name' },
                 { text: 'Location', value: 'Detail.Location' },
-                { text: 'Duration', value: 'Detail.MapDetail.rows[0].elements[0].duration.text' },
+                { text: 'Duration', value: 'Detail.MapElement.duration.text' },
                 { text: 'SignUpTime', value: 'Detail.SignUpStatus' },
                 { text: 'AttendClassTime', value: 'Detail.AttendClassTime' },
                 { text: 'StudyHours', value: 'Detail.StudyHours' },
