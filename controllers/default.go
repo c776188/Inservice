@@ -103,29 +103,29 @@ func (c *MainController) Post() {
 	result = getInitInservice().Class
 
 	// 計算距離
-	locations := []string{}
-	var locationString string
-	maxMapCount := 25
-	nloop := 0
-	for i, r := range result {
-		// push array
-		locations = append(locations, r.Detail.Location)
+	// locations := []string{}
+	// var locationString string
+	// maxMapCount := 25
+	// nloop := 0
+	// for i, r := range result {
+	// 	// push array
+	// 	locations = append(locations, r.Detail.Location)
 
-		if i%maxMapCount == maxMapCount-1 || i == len(result)-1 {
-			// handle string and call map api
-			locationString = TrimSpaceNewlineInString(strings.Join(locations[:], "|"))
-			tmpMap := getMapDuration(locationString)
+	// 	if i%maxMapCount == maxMapCount-1 || i == len(result)-1 {
+	// 		// handle string and call map api
+	// 		locationString = TrimSpaceNewlineInString(strings.Join(locations[:], "|"))
+	// 		tmpMap := getMapDuration(locationString)
 
-			// assign element
-			for j, element := range tmpMap.Rows[0].Elements {
-				result[j+nloop*maxMapCount].Detail.MapElement = element
-			}
+	// 		// assign element
+	// 		for j, element := range tmpMap.Rows[0].Elements {
+	// 			result[j+nloop*maxMapCount].Detail.MapElement = element
+	// 		}
 
-			// reset data
-			locations = nil
-			nloop++
-		}
-	}
+	// 		// reset data
+	// 		locations = nil
+	// 		nloop++
+	// 	}
+	// }
 
 	c.Data["json"] = &result
 	c.ServeJSON()

@@ -3,7 +3,7 @@ window.onload = function() {
         el: '#app',
         vuetify: new Vuetify(),
         data: {
-            isloading: true,
+            loading: true,
             search: '',
             headers: [{
                     text: 'ID',
@@ -19,16 +19,14 @@ window.onload = function() {
                 { text: '研習時數', value: 'Detail.StudyHours' },
                 { text: '登錄日期', value: 'Detail.EntryDate' },
             ],
-            classes: [
-                {}
-            ]
+            classes: []
         },
         created: function() {
             this.callCrawler()
         },
         methods: {
             callCrawler() {
-                this.isloading = true;
+                this.loading = true;
                 var self = this;
                 $.ajax({
                     type: 'POST',
@@ -36,7 +34,7 @@ window.onload = function() {
                     data: {},
                     success: function(data) {
                         self.classes = data;
-                        self.isloading = false;
+                        self.loading = false;
                     }
                 });
             }
