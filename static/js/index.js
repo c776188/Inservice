@@ -19,10 +19,23 @@ window.onload = function() {
                 { text: '研習時數', value: 'Detail.StudyHours' },
                 { text: '登錄日期', value: 'Detail.EntryDate' },
             ],
-            classes: []
+            classes: [],
+            urlPrefix: "https://www1.inservice.edu.tw/NAPP/CourseView.aspx?cid="
         },
         created: function() {
             this.callCrawler()
+        },
+        watch: {
+            enabled(slot) {
+                if (slot === 'no-data') {
+                    this.items = []
+                } else if (slot === 'no-results') {
+                    this.search = '...'
+                } else {
+                    this.search = null
+                    this.items = desserts
+                }
+            },
         },
         methods: {
             callCrawler() {
@@ -37,7 +50,10 @@ window.onload = function() {
                         self.loading = false;
                     }
                 });
-            }
+            },
+            isEnabled(slot) {
+                return this.enabled === slot
+            },
         }
     })
 }

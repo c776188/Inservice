@@ -99,36 +99,43 @@ func (c *MainController) Post() {
 
 	var result []iClass
 
-	// post
+	// 爬蟲
 	result = getInitInservice().Class
 
-	// 計算距離
-	// locations := []string{}
-	// var locationString string
-	// maxMapCount := 25
-	// nloop := 0
-	// for i, r := range result {
-	// 	// push array
-	// 	locations = append(locations, r.Detail.Location)
-
-	// 	if i%maxMapCount == maxMapCount-1 || i == len(result)-1 {
-	// 		// handle string and call map api
-	// 		locationString = TrimSpaceNewlineInString(strings.Join(locations[:], "|"))
-	// 		tmpMap := getMapDuration(locationString)
-
-	// 		// assign element
-	// 		for j, element := range tmpMap.Rows[0].Elements {
-	// 			result[j+nloop*maxMapCount].Detail.MapElement = element
-	// 		}
-
-	// 		// reset data
-	// 		locations = nil
-	// 		nloop++
-	// 	}
-	// }
+	// 取得map距離
+	// result = getMapDuration(result)
 
 	c.Data["json"] = &result
 	c.ServeJSON()
+}
+
+func getMapDuration(result []iClass) []iClass {
+	// 計算距離
+	locations := []string{}
+	var locationString string
+	maxMapCount := 25
+	nloop := 0
+	for i, r := range result {
+		// push array
+		locations = append(locations, r.Detail.Location)
+
+		if i%maxMapCount == maxMapCount-1 || i == len(result)-1 {
+			// handle string and call map api
+			locationString = TrimSpaceNewlineInString(strings.Join(locations[:], "|"))
+			tmpMap := callMapDistanceMatrix(locationString)
+
+			// assign element
+			for j, element := range tmpMap.Rows[0].Elements {
+				result[j+nloop*maxMapCount].Detail.MapElement = element
+			}
+
+			// reset data
+			locations = nil
+			nloop++
+		}
+	}
+
+	return result
 }
 
 func TrimSpaceNewlineInString(s string) string {
@@ -377,7 +384,7 @@ func postInserviceDetail(id string) iDetail {
 }
 
 // 取得map資料
-func getMapDuration(destinations string) gMap {
+func callMapDistanceMatrix(destinations string) gMap {
 	// 從config取得map key
 	mapConfig, err := config.NewConfig("ini", "conf/env.conf")
 	mapKey := mapConfig.String("gMapKey")

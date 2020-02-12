@@ -26,9 +26,17 @@
                 <v-card-title>
                     全國教師在職進修網
                     <v-spacer></v-spacer>
-                    <v-text-field v-model="search" append-icon="search" label="Search" single-line hide-details></v-text-field>
+                    <v-text-field v-model="search" append-icon="search" label="Search" single-line hide-details>
+                    </v-text-field>
                 </v-card-title>
-                <v-data-table :headers="headers" :items="classes" :search="search" dark :loading="loading" loading-text="Loading... Please wait"></v-data-table>
+                <v-data-table :headers="headers" :items="classes" :search="search" dark :loading="loading" loading-text="Loading... Please wait">
+                    <template slot="items" slot-scope="props">
+                        <!-- <a :href="urlPrefix + item.ID" target="_blank" :title="item.Name">{{item.ID}}</a> -->
+                    </template>
+                    <template v-if="isEnabled('item.<Name>')" v-slot:item.Name="{ item }">
+                        <!-- {{ item.Name.toUpperCase() }} -->
+                      </template>
+                </v-data-table>
             </v-card>
         </v-app>
     </div>
