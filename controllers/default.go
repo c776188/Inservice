@@ -39,6 +39,7 @@ type iDetail struct {
 	AttendClassTime string
 	StudyHours      string
 	Location        string
+	EntryDate       string
 	MapElement      Elements
 }
 
@@ -368,6 +369,10 @@ func postInserviceDetail(id string) iDetail {
 		detail.Location = selection.Text()
 	})
 
+	// 登錄日期
+	dom.Find("#ctl00_CPH_Content_pl_courseData > div:nth-child(3) > div.cid_block > div:nth-child(2)").Each(func(i int, selection *goquery.Selection) {
+		detail.EntryDate = strings.ReplaceAll(selection.Text(), "．登錄日期：", "")
+	})
 	return detail
 }
 
