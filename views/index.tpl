@@ -2,7 +2,7 @@
 <html>
 
 <head>
-    <title>Crawler</title>
+    <title>Inservice</title>
     <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900" rel="stylesheet" />
     <link href="https://cdn.jsdelivr.net/npm/@mdi/font@4.x/css/materialdesignicons.min.css" rel="stylesheet" />
     <link href="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.min.css" rel="stylesheet" />
@@ -30,14 +30,15 @@
                     </v-text-field>
                 </v-card-title>
                 <v-data-table :headers="headers" :items="classes" :search="search" dark :loading="loading" loading-text="Loading... Please wait">
-                    <template slot="item.ID" slot-scope="props">
-                        <a :href="urlPrefix + props.value" target="_blank" :title="props.value">{{props.value}}</a>
+                    <template v-slot:item.id="{ item }">
+                        <a :href="urlPrefix + item.ID" target="_blank" :title="item.ID">{{item.ID}}</a>
                     </template>
                 </v-data-table>
             </v-card>
         </v-app>
     </div>
 
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.4.1.js" integrity="sha256-WpOohJOqMqqyKL9FccASB9O0KwACQJpFTUBLTYOVvVU=" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.js"></script>
