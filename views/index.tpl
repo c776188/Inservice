@@ -30,12 +30,9 @@
                     </v-text-field>
                 </v-card-title>
                 <v-data-table :headers="headers" :items="classes" :search="search" dark :loading="loading" loading-text="Loading... Please wait">
-                    <template slot="items" slot-scope="props">
-                        <!-- <a :href="urlPrefix + item.ID" target="_blank" :title="item.Name">{{item.ID}}</a> -->
+                    <template slot="item.ID" slot-scope="props">
+                        <a :href="urlPrefix + props.value" target="_blank" :title="props.value">{{props.value}}</a>
                     </template>
-                    <template v-if="isEnabled('item.<Name>')" v-slot:item.Name="{ item }">
-                        <!-- {{ item.Name.toUpperCase() }} -->
-                      </template>
                 </v-data-table>
             </v-card>
         </v-app>
