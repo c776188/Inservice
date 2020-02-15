@@ -22,7 +22,7 @@
     <div id="app">
         <v-app id="inspire">
             <!-- <div v-if="loading" id="loading">Loading~~~~</div> -->
-            <v-card dark>
+            <v-card dark height="100%">
                 <v-card-title>
                     全國教師在職進修網
                     <v-spacer></v-spacer>
