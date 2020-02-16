@@ -20,10 +20,27 @@ window.onload = function() {
                 { text: "登錄日期", value: "Detail.EntryDate" }
             ],
             classes: [],
-            urlPrefix: "https://www1.inservice.edu.tw/NAPP/CourseView.aspx?cid="
+            urlPrefix: "https://www1.inservice.edu.tw/NAPP/CourseView.aspx?cid=",
+            selectedHeaders: [],
+            showHeaders: []
         },
         created: function() {
+            this.selectedHeaders = this.headers.slice()
+            this.showHeaders = this.headers.slice()
             this.callCrawler();
+        },
+        computed: {
+            likesAllFruit() {
+                return this.selectedHeaders.length === this.headers.length
+            },
+            likesSomeFruit() {
+                return this.selectedHeaders.length > 0 && !this.likesAllFruit
+            },
+            icon() {
+                if (this.likesAllFruit) return 'mdi-close-box'
+                if (this.likesSomeFruit) return 'mdi-minus-box'
+                return 'mdi-checkbox-blank-outline'
+            },
         },
         methods: {
             callCrawler() {
@@ -38,7 +55,29 @@ window.onload = function() {
                     .catch(error => {
                         console.error(error);
                     });
-            }
+            },
+            setSelected() {
+                this.showHeaders = [];
+                for (let i = 0; i < this.selectedHeaders.length; i++) {
+                    for (let j = 0; j < this.headers.length; j++) {
+                        if (this.selectedHeaders[i] == this.headers[j].value) {
+                            this.showHeaders.push(this.headers[j]);
+                            break;
+                        }
+                    }
+                }
+            },
+            toggle() {
+                this.$nextTick(() => {
+                    if (this.likesAllFruit) {
+                        this.selectedHeaders = []
+                        this.showHeaders = []
+                    } else {
+                        this.selectedHeaders = this.headers.slice()
+                        this.showHeaders = this.headers.slice()
+                    }
+                })
+            },
         }
     });
 };
