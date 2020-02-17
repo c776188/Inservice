@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"io/ioutil"
 	"log"
-	"math/rand"
 	"net/http"
 	"net/url"
 	"regexp"
@@ -79,7 +78,7 @@ type Fare struct {
 	Value    int    `json:"value"`
 }
 
-var searchUrl = "https://www1.inservice.edu.tw/script/IndexQuery.aspx?city="
+var searchUrl = ""
 var cookie = ""
 
 type MainController struct {
@@ -97,8 +96,7 @@ func (c *MainController) Get() {
 
 // post 取得課程資訊
 func (c *MainController) Post() {
-	searchUrl = searchUrl + "9"
-	cookie = RandStringRunes(24)
+	searchUrl = "https://www1.inservice.edu.tw/script/IndexQuery.aspx?city=9"
 
 	var result []iClass
 
@@ -141,15 +139,6 @@ func getMapDuration(result []iClass) []iClass {
 	return result
 }
 
-func RandStringRunes(n int) string {
-	var letterRunes = []rune("abcdefghijklmnopqrstuvwxyz0123456789")
-	b := make([]rune, n)
-	for i := range b {
-		b[i] = letterRunes[rand.Intn(len(letterRunes))]
-	}
-	return string(b)
-}
-
 func TrimSpaceNewlineInString(s string) string {
 	space := regexp.MustCompile(`\s+`)
 	return space.ReplaceAllString(s, "")
@@ -157,22 +146,24 @@ func TrimSpaceNewlineInString(s string) string {
 
 // 取得key
 func getInitInservice() defaultKey {
-	req, _ := http.NewRequest("GET", searchUrl, nil)
-
-	req.Header.Add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.108 Safari/537.36")
-	req.Header.Add("Accept", "*/*")
-	req.Header.Add("Cache-Control", "no-cache")
-	req.Header.Add("Host", "www1.inservice.edu.tw")
-	req.Header.Add("Accept-Encoding", "gzip, deflate")
-	req.Header.Add("Cookie", "ASP.NET_SessionId="+cookie)
-	// req.Header.Add("Connection", "keep-alive")
-	req.Header.Add("cache-control", "no-cache")
-
-	res, err := http.DefaultClient.Do(req)
+	client := &http.Client{}
+	req, err := http.NewRequest("GET", searchUrl, nil)
 	if err != nil {
-		log.Fatalln(err)
+		fmt.Println(err)
+	}
+
+	res, err := client.Do(req)
+	if err != nil {
+		fmt.Println(err)
 	}
 	defer res.Body.Close()
+
+	// catch cookie
+	for _, c := range res.Cookies() {
+		if c.Name == "ASP.NET_SessionId" {
+			cookie = c.Value
+		}
+	}
 
 	// goquery 爬蟲取得資訊
 	dom, err := goquery.NewDocumentFromReader(res.Body)
@@ -190,6 +181,7 @@ func getInitInservice() defaultKey {
 	searchKey["__VIEWSTATEGENERATOR"] = "82F443D6"
 	searchKey["__VIEWSTATEENCRYPTED"] = ""
 	searchKey["__EVENTARGUMENT"] = ""
+	searchKey["__LASTFOCUS"] = ""
 	searchKey["ddlQueryType"] = "byCity"
 	searchKey["ddlCityList"] = "9"
 	searchKey["ddlSchoolLevelByCity"] = "50"
@@ -206,7 +198,8 @@ func postSearchInservice(key defaultKey, searchKey string) []iClass {
 	postData := make(map[string]string)
 	postData["__EVENTVALIDATION"] = key.EVENTVALIDATION
 	postData["__VIEWSTATE"] = key.VIEWSTATE
-	postData["button1"] = "查詢"
+	postData["__EVENTTARGET"] = "dgSelectResult$_ctl24$_ctl0"
+	postData["Button1"] = "查詢"
 	payload := strings.NewReader(searchKey + encodeSendData(postData))
 
 	req, _ := http.NewRequest("POST", searchUrl, payload)
