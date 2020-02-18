@@ -50,7 +50,7 @@
                 </v-card-title>
                 <v-data-table :headers="showHeaders" :items="classes " :search="search " :loading="loading " loading-text="Loading... Please wait ">
                     <template v-slot:item.url="{ item } ">
-                        <a :href="urlPrefix + item.ID " target="_blank " :title="item.ID ">連結</a>
+                        <v-icon @click="gotoLink(urlPrefix + item.ID)">fas fa-external-link-alt</v-icon>
                     </template>
                 </v-data-table>
             </v-card>

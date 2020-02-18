@@ -77,6 +77,9 @@ window.onload = function() {
                     }
                 })
             },
+            gotoLink(url) {
+                window.open(url, '_blank');
+            }
         }
     });
 };
