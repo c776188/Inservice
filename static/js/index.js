@@ -9,15 +9,16 @@ window.onload = function() {
                     text: "ID",
                     align: "left",
                     sortable: false,
-                    value: "id"
+                    value: "ID"
                 },
                 { text: "課程名稱", value: "Name" },
                 { text: "開課地點", value: "Detail.Location" },
                 { text: "距離時間", value: "Detail.MapElement.duration.text" },
-                { text: "報名時間", value: "Detail.SignUpStatus" },
+                { text: "報名時間", value: "Detail.SignUpTime" },
                 { text: "上課日期", value: "Detail.AttendClassTime" },
                 { text: "研習時數", value: "Detail.StudyHours" },
-                { text: "登錄日期", value: "Detail.EntryDate" }
+                { text: "登錄日期", value: "Detail.EntryDate" },
+                { text: "連結", sortable: false, value: "url" }
             ],
             classes: [],
             urlPrefix: "https://www1.inservice.edu.tw/NAPP/CourseView.aspx?cid=",
@@ -58,12 +59,10 @@ window.onload = function() {
             },
             setSelected() {
                 this.showHeaders = [];
-                for (let i = 0; i < this.selectedHeaders.length; i++) {
-                    for (let j = 0; j < this.headers.length; j++) {
-                        if (this.selectedHeaders[i] == this.headers[j].value) {
-                            this.showHeaders.push(this.headers[j]);
-                            break;
-                        }
+                for (let i = 0; i < this.headers.length; i++) {
+                    if (selectedHeaders.indexOf(this.headers[i].value)) {
+                        this.showHeaders.push(this.headers[j]);
+                        break;
                     }
                 }
             },

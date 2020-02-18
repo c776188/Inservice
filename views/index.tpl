@@ -49,8 +49,8 @@
                     </v-text-field>
                 </v-card-title>
                 <v-data-table :headers="showHeaders" :items="classes " :search="search " :loading="loading " loading-text="Loading... Please wait ">
-                    <template v-slot:item.id="{ item } ">
-                        <a :href="urlPrefix + item.ID " target="_blank " :title="item.ID ">{{item.ID}}</a>
+                    <template v-slot:item.url="{ item } ">
+                        <a :href="urlPrefix + item.ID " target="_blank " :title="item.ID ">連結</a>
                     </template>
                 </v-data-table>
             </v-card>

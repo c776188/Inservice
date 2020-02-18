@@ -11,6 +11,7 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/PuerkitoBio/goquery"
 	"github.com/astaxie/beego"
@@ -358,27 +359,47 @@ func postInserviceDetail(id string) iDetail {
 	var detail iDetail
 	// 報名狀態
 	dom.Find("#ctl00_CPH_Content_pl_courseData > div:nth-child(7) > table > tbody > tr > td:nth-child(2) > table > tbody > tr:nth-child(1) > td.cw_table_info.c4.cs1").Each(func(i int, selection *goquery.Selection) {
-		detail.SignUpStatus = selection.Text()
+		detail.SignUpStatus = TrimSpaceNewlineInString(selection.Text())
 	})
 
 	// 報名時間
 	dom.Find("#ctl00_CPH_Content_pl_courseData > div:nth-child(7) > table > tbody > tr > td:nth-child(2) > table > tbody > tr:nth-child(1) > td.cw_table_info.c2.cs1").Each(func(i int, selection *goquery.Selection) {
-		detail.SignUpTime = selection.Text()
+		// 判斷狀態是否顯示更詳細報名時間
+		layout := "2006/01/0215:04"
+		restime := strings.Split(detail.SignUpStatus, "開放線上報名")
+		restime = strings.Split(restime[1], "起")
+		t, err := time.Parse(layout, restime[0])
+		if err != nil {
+			detail.SignUpTime = TrimSpaceNewlineInString(selection.Text())
+		} else {
+			detail.SignUpTime = t.Format("2006/01/02 15:04")
+		}
 	})
 
 	// 上課日期
 	dom.Find("#ctl00_CPH_Content_pl_courseData > div:nth-child(4) > table > tbody > tr > td:nth-child(2) > table > tbody > tr:nth-child(1) > td.cw_table_info.c2.cs1").Each(func(i int, selection *goquery.Selection) {
-		detail.AttendClassTime = selection.Text()
+		tempAttendClassTime := TrimSpaceNewlineInString(selection.Text())
+
+		// 日期同一天的話，去掉後面
+		splitAttend := strings.Split(tempAttendClassTime, "至")
+		if splitAttend[0] == splitAttend[1] {
+			detail.AttendClassTime = splitAttend[0]
+		} else {
+			detail.AttendClassTime = tempAttendClassTime
+		}
 	})
 
 	// 研習時數
 	dom.Find("#ctl00_CPH_Content_pl_courseData > div:nth-child(4) > table > tbody > tr > td:nth-child(2) > table > tbody > tr:nth-child(3) > td.cw_table_info.c2.cs3").Each(func(i int, selection *goquery.Selection) {
-		detail.StudyHours = selection.Text()
+		tmpStudyHours := TrimSpaceNewlineInString(selection.Text())
+		tmpStudyHours = strings.ReplaceAll(tmpStudyHours, "/學分", "")
+		tmpStudyHours = strings.ReplaceAll(tmpStudyHours, "小時", "H")
+		detail.StudyHours = tmpStudyHours
 	})
 
 	// 開課地點
 	dom.Find("#ctl00_CPH_Content_pl_courseData > div:nth-child(4) > table > tbody > tr > td:nth-child(2) > table > tbody > tr:nth-child(2) > td.cw_table_info.c2.cs3").Each(func(i int, selection *goquery.Selection) {
-		detail.Location = selection.Text()
+		detail.Location = TrimSpaceNewlineInString(selection.Text())
 	})
 
 	// 登錄日期
