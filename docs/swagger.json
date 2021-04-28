@@ -1,0 +1,134 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "description": "This is a sample server celler server.",
+        "title": "Inservice",
+        "contact": {},
+        "version": "1.0"
+    },
+    "host": "localhost:8080",
+    "basePath": "/",
+    "paths": {
+        "/": {
+            "post": {
+                "description": "列表上課內容",
+                "responses": {
+                    "200": {
+                        "description": "上課資訊",
+                        "schema": {
+                            "$ref": "#/definitions/controllers.iClass"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "controllers.Distance": {
+            "type": "object",
+            "properties": {
+                "text": {
+                    "type": "string"
+                },
+                "value": {
+                    "type": "integer"
+                }
+            }
+        },
+        "controllers.Duration": {
+            "type": "object",
+            "properties": {
+                "text": {
+                    "type": "string"
+                },
+                "value": {
+                    "type": "integer"
+                }
+            }
+        },
+        "controllers.Elements": {
+            "type": "object",
+            "properties": {
+                "distance": {
+                    "$ref": "#/definitions/controllers.Distance"
+                },
+                "duration": {
+                    "$ref": "#/definitions/controllers.Duration"
+                },
+                "fare": {
+                    "$ref": "#/definitions/controllers.Fare"
+                },
+                "status": {
+                    "type": "string"
+                }
+            }
+        },
+        "controllers.Fare": {
+            "type": "object",
+            "properties": {
+                "currency": {
+                    "type": "string"
+                },
+                "text": {
+                    "type": "string"
+                },
+                "value": {
+                    "type": "integer"
+                }
+            }
+        },
+        "controllers.iClass": {
+            "type": "object",
+            "properties": {
+                "detail": {
+                    "$ref": "#/definitions/controllers.iDetail"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "location": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
+        "controllers.iDetail": {
+            "type": "object",
+            "properties": {
+                "attendClassTime": {
+                    "type": "string"
+                },
+                "entryDate": {
+                    "type": "string"
+                },
+                "location": {
+                    "type": "string"
+                },
+                "mapElement": {
+                    "$ref": "#/definitions/controllers.Elements"
+                },
+                "signUpStatus": {
+                    "type": "string"
+                },
+                "signUpTime": {
+                    "type": "string"
+                },
+                "studyHours": {
+                    "type": "string"
+                }
+            }
+        }
+    },
+    "securityDefinitions": {
+        "ApiKeyAuth": {
+            "type": "apiKey",
+            "name": "Authorization",
+            "in": "header"
+        },
+        "BasicAuth": {
+            "type": "basic"
+        }
+    }
+}

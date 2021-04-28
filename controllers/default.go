@@ -95,7 +95,13 @@ func (c *MainController) Get() {
 	c.TplName = "index.tpl"
 }
 
-// post 取得課程資訊
+// @Title Class Info
+// @Description 列表上課內容
+// @
+// @Success  200  object  iClass  "上課資訊"
+// @
+// @Resource 關於上課內容
+// @Router / [post]
 func (c *MainController) Post() {
 	searchUrl = "https://www1.inservice.edu.tw/script/IndexQuery.aspx?city=9"
 

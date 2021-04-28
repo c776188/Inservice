@@ -1,0 +1,87 @@
+basePath: /
+definitions:
+  controllers.Distance:
+    properties:
+      text:
+        type: string
+      value:
+        type: integer
+    type: object
+  controllers.Duration:
+    properties:
+      text:
+        type: string
+      value:
+        type: integer
+    type: object
+  controllers.Elements:
+    properties:
+      distance:
+        $ref: '#/definitions/controllers.Distance'
+      duration:
+        $ref: '#/definitions/controllers.Duration'
+      fare:
+        $ref: '#/definitions/controllers.Fare'
+      status:
+        type: string
+    type: object
+  controllers.Fare:
+    properties:
+      currency:
+        type: string
+      text:
+        type: string
+      value:
+        type: integer
+    type: object
+  controllers.iClass:
+    properties:
+      detail:
+        $ref: '#/definitions/controllers.iDetail'
+      id:
+        type: string
+      location:
+        type: string
+      name:
+        type: string
+    type: object
+  controllers.iDetail:
+    properties:
+      attendClassTime:
+        type: string
+      entryDate:
+        type: string
+      location:
+        type: string
+      mapElement:
+        $ref: '#/definitions/controllers.Elements'
+      signUpStatus:
+        type: string
+      signUpTime:
+        type: string
+      studyHours:
+        type: string
+    type: object
+host: localhost:8080
+info:
+  contact: {}
+  description: This is a sample server celler server.
+  title: Inservice
+  version: "1.0"
+paths:
+  /:
+    post:
+      description: 列表上課內容
+      responses:
+        "200":
+          description: 上課資訊
+          schema:
+            $ref: '#/definitions/controllers.iClass'
+securityDefinitions:
+  ApiKeyAuth:
+    in: header
+    name: Authorization
+    type: apiKey
+  BasicAuth:
+    type: basic
+swagger: "2.0"
