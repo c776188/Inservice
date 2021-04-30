@@ -9,6 +9,7 @@ import (
 	"log"
 	"net/http"
 	"net/url"
+	"os"
 	"regexp"
 	"strconv"
 	"strings"
@@ -27,8 +28,42 @@ type DefaultKey struct {
 var searchUrl = ""
 var cookie = ""
 
+func GetAndWriteInservice() []models.IClass {
+	mapConfig, _ := config.NewConfig("ini", "conf/env.conf")
+	searchUrl := mapConfig.String("SEARCH_URL")
+
+	var result []models.IClass
+
+	// check path
+	filename := "./data/" + time.Now().Format("2006-01-02") + ".json"
+	if _, err := os.Stat("data"); os.IsNotExist(err) {
+		os.Mkdir("data", 0777)
+	}
+
+	// 如果檔案存在
+	if _, err := os.Stat(filename); err == nil {
+		return nil
+	}
+
+	// 爬蟲
+	result = getInitInservice(searchUrl).Class
+
+	// 取得map距離
+	// result = services.GetMapDuration(result)
+
+	// write json
+	file, err := json.MarshalIndent(result, "", " ")
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	_ = ioutil.WriteFile(filename, file, 0777)
+
+	return result
+}
+
 // 取得key
-func GetInitInservice(target string) DefaultKey {
+func getInitInservice(target string) DefaultKey {
 	searchUrl = target
 	client := &http.Client{}
 	req, err := http.NewRequest("GET", searchUrl, nil)
