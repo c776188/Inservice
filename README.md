@@ -5,8 +5,9 @@
 ## 環境設定
 
 /conf/env.conf  
-gMapKey = "google map key"
-origins = "起始地址"
+SEARCH_URL = "https://www1.inservice.edu.tw/script/IndexQuery.aspx?city=9"
+G_MAP_KEY = "google map key"
+ORIGINAL_LOCATION = "起始地址"
 
 ### api資料
 
