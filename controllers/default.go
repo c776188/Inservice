@@ -1,6 +1,8 @@
 package controllers
 
 import (
+	"Inservice/models"
+	_ "Inservice/models"
 	"bytes"
 	"encoding/json"
 	"fmt"
@@ -20,64 +22,10 @@ import (
 	_ "github.com/astaxie/beego/config"
 )
 
-type defaultKey struct {
+type DefaultKey struct {
 	EVENTVALIDATION string
 	VIEWSTATE       string
-	Class           []iClass
-}
-
-// 課程資訊
-type iClass struct {
-	ID       string
-	Name     string
-	Location string
-	Detail   iDetail
-}
-
-// 課程詳細資訊
-type iDetail struct {
-	SignUpStatus    string
-	SignUpTime      string
-	AttendClassTime string
-	StudyHours      string
-	Location        string
-	EntryDate       string
-	MapElement      Elements
-}
-
-// google map 串接資訊
-type gMap struct {
-	Destination_addresses []string `json:"destination_addresses"`
-	Origin_addresses      []string `json:"origin_addresses"`
-	Rows                  []Row    `json:"rows"`
-	Status                string   `json:"status"`
-}
-
-type Row struct {
-	Elements []Elements `json:"elements"`
-}
-
-type Elements struct {
-	Distance Distance `json:"distance"`
-	Duration Duration `json:"duration"`
-	Fare     Fare     `json:"fare"`
-	Status   string   `json:"status"`
-}
-
-type Distance struct {
-	Text  string `json:"text"`
-	Value int    `json:"value"`
-}
-
-type Duration struct {
-	Text  string `json:"text"`
-	Value int    `json:"value"`
-}
-
-type Fare struct {
-	Currency string `json:"currency"`
-	Text     string `json:"text"`
-	Value    int    `json:"value"`
+	Class           []models.IClass
 }
 
 var searchUrl = ""
@@ -99,14 +47,14 @@ func (c *MainController) Get() {
 // @Title Class Info
 // @Description 列表上課內容
 // @
-// @Success  200  object  iClass  "上課資訊"
+// @Success  200  object  models.IClass  "上課資訊"
 // @
 // @Resource 關於上課內容
 // @Router / [post]
 func (c *MainController) Post() {
 	searchUrl = "https://www1.inservice.edu.tw/script/IndexQuery.aspx?city=9"
 
-	var result []iClass
+	var result []models.IClass
 
 	filename := "./data/" + time.Now().Format("2006-01-02") + ".json"
 	// check path
@@ -142,7 +90,7 @@ func (c *MainController) Post() {
 	c.ServeJSON()
 }
 
-func getMapDuration(result []iClass) []iClass {
+func getMapDuration(result []models.IClass) []models.IClass {
 	// 計算距離
 	locations := []string{}
 	var locationString string
@@ -177,7 +125,7 @@ func TrimSpaceNewlineInString(s string) string {
 }
 
 // 取得key
-func getInitInservice() defaultKey {
+func getInitInservice() DefaultKey {
 	client := &http.Client{}
 	req, err := http.NewRequest("GET", searchUrl, nil)
 	if err != nil {
@@ -203,7 +151,7 @@ func getInitInservice() defaultKey {
 		log.Fatalln(err)
 	}
 
-	var result defaultKey
+	var result DefaultKey
 
 	// 更新key
 	result = updateKey(dom, result)
@@ -226,7 +174,7 @@ func getInitInservice() defaultKey {
 }
 
 // 搜尋資料
-func postSearchInservice(key defaultKey, searchKey string) []iClass {
+func postSearchInservice(key DefaultKey, searchKey string) []models.IClass {
 	postData := make(map[string]string)
 	postData["__EVENTVALIDATION"] = key.EVENTVALIDATION
 	postData["__VIEWSTATE"] = key.VIEWSTATE
@@ -267,7 +215,7 @@ func postSearchInservice(key defaultKey, searchKey string) []iClass {
 }
 
 // 爬蟲 取得課程資訊
-func postInservicePage(page int, key defaultKey, searchKey string) []iClass {
+func postInservicePage(page int, key DefaultKey, searchKey string) []models.IClass {
 	postData := make(map[string]string)
 	postData["__EVENTVALIDATION"] = key.EVENTVALIDATION
 	postData["__VIEWSTATE"] = key.VIEWSTATE
@@ -295,7 +243,7 @@ func postInservicePage(page int, key defaultKey, searchKey string) []iClass {
 	defer res.Body.Close()
 
 	// goquery 爬蟲取得資訊
-	classes := []iClass{}
+	classes := []models.IClass{}
 	dom, err := goquery.NewDocumentFromReader(res.Body)
 	if err != nil {
 		log.Fatalln(err)
@@ -306,7 +254,7 @@ func postInservicePage(page int, key defaultKey, searchKey string) []iClass {
 
 	// 取得資訊
 	dom.Find(".cinfo-r1>tbody>tr>td:first-child").Each(func(i int, selection *goquery.Selection) {
-		temp := iClass{ID: selection.Text(), Detail: postInserviceDetail(selection.Text())}
+		temp := models.IClass{ID: selection.Text(), Detail: postInserviceDetail(selection.Text())}
 		classes = append(classes, temp)
 	})
 
@@ -339,7 +287,7 @@ func postInservicePage(page int, key defaultKey, searchKey string) []iClass {
 }
 
 // 更新取得key
-func updateKey(dom *goquery.Document, key defaultKey) defaultKey {
+func updateKey(dom *goquery.Document, key DefaultKey) DefaultKey {
 	dom.Find("input#__VIEWSTATE").Each(func(i int, selection *goquery.Selection) {
 		key.VIEWSTATE, _ = selection.Attr("value")
 	})
@@ -361,7 +309,7 @@ func encodeSendData(m map[string]string) string {
 }
 
 // 取得詳細資料
-func postInserviceDetail(id string) iDetail {
+func postInserviceDetail(id string) models.IDetail {
 	url := "https://www1.inservice.edu.tw/NAPP/CourseView.aspx?cid=" + id
 
 	req, _ := http.NewRequest("GET", url, nil)
@@ -387,7 +335,7 @@ func postInserviceDetail(id string) iDetail {
 	}
 
 	// goquery 爬蟲取得資訊
-	var detail iDetail
+	var detail models.IDetail
 	// 報名狀態
 	dom.Find("#ctl00_CPH_Content_pl_courseData > div:nth-child(7) > table > tbody > tr > td:nth-child(2) > table > tbody > tr:nth-child(1) > td.cw_table_info.c4.cs1").Each(func(i int, selection *goquery.Selection) {
 		detail.SignUpStatus = TrimSpaceNewlineInString(selection.Text())
@@ -441,7 +389,7 @@ func postInserviceDetail(id string) iDetail {
 }
 
 // 取得map資料
-func callMapDistanceMatrix(destinations string) gMap {
+func callMapDistanceMatrix(destinations string) models.GMap {
 	// 從config取得map key
 	mapConfig, err := config.NewConfig("ini", "conf/env.conf")
 	mapKey := mapConfig.String("gMapKey")
@@ -467,7 +415,7 @@ func callMapDistanceMatrix(destinations string) gMap {
 	body, _ := ioutil.ReadAll(res.Body)
 
 	// json string to struct
-	g := gMap{}
+	g := models.GMap{}
 	err2 := json.Unmarshal(body, &g)
 	if err2 != nil {
 		log.Fatalln(err2)
