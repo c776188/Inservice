@@ -8,6 +8,7 @@ import (
 	"log"
 	"net/http"
 	"net/url"
+	"os"
 	"regexp"
 	"strconv"
 	"strings"
@@ -107,11 +108,35 @@ func (c *MainController) Post() {
 
 	var result []iClass
 
-	// 爬蟲
-	result = getInitInservice().Class
+	filename := "./data/" + time.Now().Format("2006-01-02") + ".json"
+	// check path
+	if _, err := os.Stat("data"); os.IsNotExist(err) {
+		os.Mkdir("data", 0777)
+	}
 
-	// 取得map距離
-	// result = getMapDuration(result)
+	if _, err := os.Stat(filename); os.IsNotExist(err) {
+		// 爬蟲
+		result = getInitInservice().Class
+
+		// 取得map距離
+		// result = getMapDuration(result)
+
+		// write json
+		file, err := json.MarshalIndent(result, "", " ")
+		if err != nil {
+			fmt.Println(err)
+		}
+
+		_ = ioutil.WriteFile(filename, file, 0777)
+	} else {
+		// read json
+		file, err := ioutil.ReadFile(filename)
+		if err != nil {
+			fmt.Println(err)
+		}
+
+		_ = json.Unmarshal([]byte(file), &result)
+	}
 
 	c.Data["json"] = &result
 	c.ServeJSON()

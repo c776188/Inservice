@@ -20,5 +20,15 @@ import (
 // @in header
 // @name Authorization
 func main() {
+	// clear data
+	// files, _ := ioutil.ReadDir("./data")
+	// for _, f := range files {
+	// 	fmt.Println(f.Name())
+	// 	e := os.Remove("GeeksforGeeks.txt")
+	// 	if e != nil {
+	// 		fmt.Println("error delete data: ", e)
+	// 	}
+	// }
+
 	beego.Run()
 }
