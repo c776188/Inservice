@@ -1,6 +1,7 @@
 package main
 
 import (
+	"Inservice/job"
 	_ "Inservice/routers"
 	"Inservice/services"
 
@@ -30,6 +31,8 @@ func main() {
 	// 		fmt.Println("error delete data: ", e)
 	// 	}
 	// }
+
+	go job.CrawlerTaskListener()
 
 	services.GetAndWriteInservice()
 	beego.Run()

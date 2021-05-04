@@ -24,5 +24,6 @@ func init() {
 	}))
 
 	beego.Router("/", &controllers.MainController{})
+	beego.Router("/task", &controllers.TaskController{})
 	beego.SetStaticPath("/swagger", "swagger")
 }

@@ -8,14 +8,16 @@
     <link href="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.min.css" rel="stylesheet" />
     <link href="https://use.fontawesome.com/releases/v5.0.13/css/all.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.x/css/font-awesome.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Material+Icons|Material+Icons+Outlined|Material+Icons+Two+Tone|Material+Icons+Round|Material+Icons+Sharp" />
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui" />
+    <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css?family=Material+Icons|Material+Icons+Outlined|Material+Icons+Two+Tone|Material+Icons+Round|Material+Icons+Sharp" />
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui" />
 
     <style type="text/css">
         [v-cloak] {
             display: none;
         }
-        
+
         .v-list-item--link::before {
             background-color: red;
         }
@@ -30,25 +32,33 @@
                 <v-card-title>
                     全國教師在職進修網
                     <v-spacer></v-spacer>
-                    <v-select v-model="selectedHeaders" item-value="value" :items="headers" label="Favorite Header" @input="setSelected" multiple dark>
+                    <v-select v-model="selectedHeaders" item-value="value" :items="headers" label="Favorite Header"
+                        @input="setSelected" multiple dark>
                         <template v-slot:prepend-item>
-                                <v-list-item ripple @click="toggle">
-                                    <v-list-item-action>
-                                        <v-icon :color="selectedHeaders.length > 0 ? 'indigo darken-4' : ''">{{ icon }}</v-icon>
-                                    </v-list-item-action>
-                                    <v-list-item-content>
-                                        <v-list-item-title>Select All</v-list-item-title>
-                                    </v-list-item-content>
-                                </v-list-item>
-                                <v-divider class="mt-2"></v-divider>
-                            </template>
+                            <v-list-item ripple @click="toggle">
+                                <v-list-item-action>
+                                    <v-icon :color="selectedHeaders.length > 0 ? 'indigo darken-4' : ''">{{ icon }}
+                                    </v-icon>
+                                </v-list-item-action>
+                                <v-list-item-content>
+                                    <v-list-item-title>Select All</v-list-item-title>
+                                </v-list-item-content>
+                            </v-list-item>
+                            <v-divider class="mt-2"></v-divider>
+                        </template>
                     </v-select>
                     <v-spacer></v-spacer>
-
                     <v-text-field v-model="search" append-icon="search" label="Search" single-line hide-details>
                     </v-text-field>
+                    <v-spacer></v-spacer>
+                    <v-btn class="ma-2" color="blue" @click="setTask" dark>
+                        <v-icon dark>
+                            mdi-wrench
+                        </v-icon>
+                    </v-btn>
                 </v-card-title>
-                <v-data-table :headers="showHeaders" :items="classes " :search="search " :loading="loading " loading-text="Loading... Please wait ">
+                <v-data-table :headers="showHeaders" :items="classes " :search="search " :loading="loading "
+                    loading-text="Loading... Please wait ">
                     <template v-slot:item.url="{ item } ">
                         <v-icon small @click="gotoLink(urlPrefix + item.ID)">fas fa-external-link-alt</v-icon>
                     </template>
@@ -58,7 +68,8 @@
     </div>
 
     <script src="https://unpkg.com/axios/dist/axios.min.js "></script>
-    <script src="https://code.jquery.com/jquery-3.4.1.js " integrity="sha256-WpOohJOqMqqyKL9FccASB9O0KwACQJpFTUBLTYOVvVU=" crossorigin=" anonymous "></script>
+    <script src="https://code.jquery.com/jquery-3.4.1.js "
+        integrity="sha256-WpOohJOqMqqyKL9FccASB9O0KwACQJpFTUBLTYOVvVU=" crossorigin=" anonymous "></script>
     <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js "></script>
     <script src="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.js "></script>
     <script src="/static/js/index.js "></script>

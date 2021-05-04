@@ -1,4 +1,4 @@
-window.onload = function() {
+window.onload = function () {
     new Vue({
         el: "#app",
         vuetify: new Vuetify(),
@@ -11,21 +11,46 @@ window.onload = function() {
                     sortable: false,
                     value: "ID"
                 },
-                { text: "課程名稱", value: "Name" },
-                { text: "開課地點", value: "Detail.Location" },
-                { text: "距離時間", value: "Detail.MapElement.duration.text" },
-                { text: "報名時間", value: "Detail.SignUpTime" },
-                { text: "上課日期", value: "Detail.AttendClassTime" },
-                { text: "研習時數", value: "Detail.StudyHours" },
-                { text: "登錄日期", value: "Detail.EntryDate" },
-                { text: "連結", sortable: false, value: "url" }
+                {
+                    text: "課程名稱",
+                    value: "Name"
+                },
+                {
+                    text: "開課地點",
+                    value: "Detail.Location"
+                },
+                {
+                    text: "距離時間",
+                    value: "Detail.MapElement.duration.text"
+                },
+                {
+                    text: "報名時間",
+                    value: "Detail.SignUpTime"
+                },
+                {
+                    text: "上課日期",
+                    value: "Detail.AttendClassTime"
+                },
+                {
+                    text: "研習時數",
+                    value: "Detail.StudyHours"
+                },
+                {
+                    text: "登錄日期",
+                    value: "Detail.EntryDate"
+                },
+                {
+                    text: "連結",
+                    sortable: false,
+                    value: "url"
+                }
             ],
             classes: [],
             urlPrefix: "https://www1.inservice.edu.tw/NAPP/CourseView.aspx?cid=",
             selectedHeaders: [],
             showHeaders: []
         },
-        created: function() {
+        created: function () {
             this.selectedHeaders = this.headers.slice()
             this.showHeaders = this.headers.slice()
             this.callCrawler();
@@ -79,6 +104,17 @@ window.onload = function() {
             },
             gotoLink(url) {
                 window.open(url, '_blank');
+            },
+            setTask() {
+                console.log(123)
+                axios.post("/task")
+                    .then(res => {
+                        self.classes = res.data;
+                        self.loading = false;
+                    })
+                    .catch(error => {
+                        console.error(error);
+                    });
             }
         }
     });
