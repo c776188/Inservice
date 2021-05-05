@@ -48,7 +48,9 @@ window.onload = function () {
             classes: [],
             urlPrefix: "https://www1.inservice.edu.tw/NAPP/CourseView.aspx?cid=",
             selectedHeaders: [],
-            showHeaders: []
+            showHeaders: [],
+            dialog: false,
+            taskList: [],
         },
         created: function () {
             this.selectedHeaders = this.headers.slice()
@@ -81,6 +83,14 @@ window.onload = function () {
                     .catch(error => {
                         console.error(error);
                     });
+
+                axios.get("/task")
+                    .then(res => {
+                        self.taskList = res.data;
+                    })
+                    .catch(error => {
+                        console.error(error);
+                    });
             },
             setSelected() {
                 this.showHeaders = [];
@@ -105,16 +115,43 @@ window.onload = function () {
             gotoLink(url) {
                 window.open(url, '_blank');
             },
-            setTask() {
-                console.log(123)
-                axios.post("/task")
+            storeTask() {
+                let self = this;
+
+                // 課程名字
+                var count = 1;
+                this.classes.forEach(function (item) {
+                    for (var i = 0; i < 5; i++) {
+                        if (self.taskList[i].ID == item.ID) {
+                            self.taskList[i].Name = item.Name;
+                            count++;
+                        }
+
+                        if (count == 5) {
+                            break;
+                        }
+                    }
+                });
+
+                var bodyFormData = new FormData();
+                bodyFormData.append('taskList', JSON.stringify(this.taskList));
+
+                axios({
+                        method: "post",
+                        url: "/task",
+                        data: bodyFormData,
+                        headers: {
+                            "Content-Type": "multipart/form-data"
+                        },
+                    })
                     .then(res => {
-                        self.classes = res.data;
-                        self.loading = false;
+                        console.log(res.data)
                     })
                     .catch(error => {
                         console.error(error);
                     });
+
+                this.dialog = false
             }
         }
     });

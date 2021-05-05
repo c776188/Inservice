@@ -51,11 +51,49 @@
                     <v-text-field v-model="search" append-icon="search" label="Search" single-line hide-details>
                     </v-text-field>
                     <v-spacer></v-spacer>
-                    <v-btn class="ma-2" color="blue" @click="setTask" dark>
+                    <!-- <v-btn class="ma-2" color="blue" @click="setTask" dark>
                         <v-icon dark>
                             mdi-wrench
                         </v-icon>
-                    </v-btn>
+                    </v-btn> -->
+                    <template>
+                        <v-row justify="center">
+                            <v-dialog v-model="dialog" persistent max-width="600px">
+                                <template v-slot:activator="{ on, attrs }">
+                                    <v-btn color="primary" dark v-bind="attrs" v-on="on">
+                                        Task
+                                    </v-btn>
+                                </template>
+                                <v-card dark>
+                                    <v-card-title>
+                                        <span class="headline">Task List</span>
+                                    </v-card-title>
+                                    <v-card-text>
+                                        <v-container>
+                                            <v-row v-for="n in 5">
+                                                <v-col cols="12" sm="3" md="3">
+                                                    <!-- v-model='taskList[$n-1].ID' -->
+                                                    <v-text-field label="ID" hint="請輸入ID" v-model="taskList[n-1].ID"></v-text-field>
+                                                </v-col>
+                                                <v-col cols="12" sm="9" md="9">
+                                                    <span style="font-size: 20px;">課程名稱: {{taskList[n-1].Name}}</span>
+                                                </v-col>
+                                            </v-row>
+                                        </v-container>
+                                    </v-card-text>
+                                    <v-card-actions>
+                                        <v-spacer></v-spacer>
+                                        <v-btn color="blue darken-1" text @click="dialog = false">
+                                            Close
+                                        </v-btn>
+                                        <v-btn color="blue darken-1" text @click="storeTask">
+                                            Save
+                                        </v-btn>
+                                    </v-card-actions>
+                                </v-card>
+                            </v-dialog>
+                        </v-row>
+                    </template>
                 </v-card-title>
                 <v-data-table :headers="showHeaders" :items="classes " :search="search " :loading="loading "
                     loading-text="Loading... Please wait ">

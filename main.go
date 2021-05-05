@@ -1,7 +1,6 @@
 package main
 
 import (
-	"Inservice/job"
 	_ "Inservice/routers"
 	"Inservice/services"
 
@@ -32,7 +31,7 @@ func main() {
 	// 	}
 	// }
 
-	go job.CrawlerTaskListener()
+	// go job.CrawlerTaskListener()
 
 	services.GetAndWriteInservice()
 	beego.Run()

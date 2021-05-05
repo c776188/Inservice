@@ -35,6 +35,7 @@ require (
 	github.com/spf13/pflag v1.0.5 // indirect
 	github.com/spf13/viper v1.7.1 // indirect
 	github.com/swaggo/swag v1.7.0 // indirect
+	github.com/thedevsaddam/gojsonq v2.3.0+incompatible // indirect
 	go.starlark.net v0.0.0-20210416142453-1607a96e3d72 // indirect
 	golang.org/x/arch v0.0.0-20210422031329-8ee3ab241ede // indirect
 	golang.org/x/crypto v0.0.0-20210421170649-83a5a9bb288b // indirect

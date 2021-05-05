@@ -2,6 +2,7 @@ package job
 
 import (
 	"Inservice/models"
+	"Inservice/services"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
@@ -42,7 +43,7 @@ func readTaskFile() {
 		_ = json.Unmarshal([]byte(file), &contents)
 
 		for i, single := range contents {
-			checkStatus("https://www1.inservice.edu.tw/NAPP/CourseView.aspx?cid=" + single.ID)
+			checkStatus(single)
 
 			// 超過五篇則無效
 			if i >= 5 {
@@ -52,7 +53,8 @@ func readTaskFile() {
 	}
 }
 
-func checkStatus(url string) {
+func checkStatus(task models.TaskUrl) {
+	url := "https://www1.inservice.edu.tw/NAPP/CourseView.aspx?cid=" + task.ID
 	req, _ := http.NewRequest("GET", url, nil)
 
 	req.Header.Add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.108 Safari/537.36")
@@ -86,6 +88,7 @@ func checkStatus(url string) {
 			fmt.Println("還沒開放")
 		} else {
 			fmt.Println("已開放")
+			services.Mail(task)
 		}
 	})
 }
