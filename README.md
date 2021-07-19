@@ -12,3 +12,6 @@ ORIGINAL_LOCATION = "起始地址"
 ### api資料
 
 [Distance Matrix API](https://developers.google.com/maps/documentation/distance-matrix/intro#travel_modes)
+
+
+test
