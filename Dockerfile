@@ -10,4 +10,5 @@ COPY . .
 RUN go get github.com/beego/bee
 RUN go install
 
+EXPOSE 8080
 CMD bee run

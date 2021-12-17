@@ -3,6 +3,8 @@ package main
 import (
 	_ "Inservice/routers"
 	"Inservice/services"
+	"os"
+	"strconv"
 
 	"github.com/astaxie/beego"
 )
@@ -32,7 +34,10 @@ func main() {
 	// }
 
 	// go job.CrawlerTaskListener()
-
+	port, err := strconv.Atoi(os.Getenv("PORT"))
+	if err == nil {
+		beego.BConfig.Listen.HTTPPort = port
+	}
 	services.GetAndWriteInservice()
 	beego.Run()
 }
