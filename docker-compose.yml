@@ -5,8 +5,8 @@ services:
         context: .
         dockerfile: Dockerfile
     volumes:
-      - ".:/go/src/app"
+      - ".:/usr/local/go/src/Inservice"
     ports:
       - "8080:8080"
-      # - "5000:5000"
     restart: always
+    # tty: true
