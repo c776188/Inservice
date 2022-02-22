@@ -95,9 +95,8 @@ window.onload = function () {
             setSelected() {
                 this.showHeaders = [];
                 for (let i = 0; i < this.headers.length; i++) {
-                    if (selectedHeaders.indexOf(this.headers[i].value)) {
-                        this.showHeaders.push(this.headers[j]);
-                        break;
+                    if (this.selectedHeaders.indexOf(this.headers[i].value) > -1) {
+                        this.showHeaders.push(this.headers[i]);
                     }
                 }
             },
